@@ -17,7 +17,7 @@ The addon zip is encrypted by doing a bitwise XOR on the zip and a combination o
 2. Provide the path to your Bioshock installation. For example: *C:\Program Files (x86)\Steam\steamapps\common\Bioshock*.
 3. Provide the path to the encrypted zip. For example: *C:\Program Files (x86)\Steam\steamapps\common\Half-Life Alyx\medical_pavilion_lobby.zip*.
 4. Hit decrypt and let er ripp.
-5. Unzip the contents of the decrypted addon zip into your Half Life Alyx *\content\hlvr_addons* folder. For example: *C:\Program Files (x86)\Steam\steamapps\common\Half-Life Alyx\content\hlvr_addons*.
+5. Unzip the contents of the decrypted addon zip into your Half Life Alyx *\game\hlvr_addons* folder. For example: *C:\Program Files (x86)\Steam\steamapps\common\Half-Life Alyx\game\hlvr_addons*.
 6. Select the map from "Local Addons" in game.
 7. Enjoy!
 
