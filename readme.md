@@ -20,7 +20,7 @@ The addon zip is encrypted by doing a bitwise XOR on the zip and a combination o
 6. Select the map from "Local Addons" in game.
 7. Enjoy!
 
-# NOTES:
+# Notes:
 - The zip does not contain any original Bioshock assets. You WILL need to provide these assets yourself or the data is useless.
 - It can take a couple of seconds for the program to start up, please be patient :)
 - Windows is not a fan of unknown executables so will throw up a smartscreen window. Just press "More info" and "Run anyway".
@@ -28,7 +28,7 @@ The addon zip is encrypted by doing a bitwise XOR on the zip and a combination o
 
 # Run the python script
 - Have python 3.6 or higher installed.
-- Make just python is added to the PATH enviroment variable.
+- Make sure python is added to the PATH enviroment variable.
 - Download the python script from this page (top right -> green "code" button -> Download zip)
 - Open a command prompt (Ctrl+R -> "cmd" -> Enter)
 - Use the following command: *cd* [path of the folder which contains the .py file]
