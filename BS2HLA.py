@@ -44,11 +44,10 @@ def decrypt():
     # load the bioshock assets
     print_to_textbox("Loading Bioshock assets...", output)
     try:
-        bulkfile = bytearray(open(Bioshock_root_path / "Content" / "BulkContent" / "1-medicalLevel.blk", 'rb').read())
-        mapfile = bytearray(open(Bioshock_root_path / "Content" / "Maps" / "1-Medical.bsm", 'rb').read())
-        assets = bulkfile + mapfile
-        assets_size = len(assets)
-        print_to_textbox(f"Bioshock assets loaded! Size: {(assets_size / 1000000):.2f}mb", output)
+        with open(Bioshock_root_path / "Content" / "BulkContent" / "1-medicalLevel.blk", 'rb') as bulkfile, open(Bioshock_root_path / "Content" / "Maps" / "1-Medical.bsm", 'rb') as mapfile:
+            assets = bytearray(bulkfile.read()) + bytearray(mapfile.read())
+            assets_size = len(assets)
+            print_to_textbox(f"Bioshock assets loaded! Size: {(assets_size / 1000000):.2f}mb", output)
     except Exception as e:
         print_to_textbox("Could not load Bioshock assets.", output)
         print_to_textbox(str(e), output)
@@ -57,9 +56,10 @@ def decrypt():
     # load the addon zip
     print_to_textbox("Loading addon zip...", output)
     try:
-        addon_zip = bytearray(open(addon_zip_path, 'rb').read())
-        addon_zip_size = len(addon_zip)
-        print_to_textbox(f"Addon zip loaded! Size: {(addon_zip_size / 1000000):.2f}mb", output)
+        with open(addon_zip_path, 'rb') as addon_zip_file:
+            addon_zip = bytearray(addon_zip_file.read())
+            addon_zip_size = len(addon_zip)
+            print_to_textbox(f"Addon zip loaded! Size: {(addon_zip_size / 1000000):.2f}mb", output)
     except Exception as e:
         print_to_textbox("Could not load the addon zip.", output)
         print_to_textbox(str(e), output)
@@ -70,29 +70,28 @@ def decrypt():
     decrypted_addon_zip = bytearray(addon_zip_size)
     start_time = time.time()
 
-    def decrypt_addon_start(HLA_root_path):
-        def _decrypt_addon_start():
-            for i in range(addon_zip_size):
-                if i >= len(assets):
-                    # if assets are smaller than addon zip, pad the assets with 0 bits
-                    decrypted_addon_zip[i] = 0 ^ addon_zip[i]
-                else:
-                    decrypted_addon_zip[i] = assets[i] ^ addon_zip[i]
+    def decrypt_addon_start():
+        for i in range(addon_zip_size):
+            if i >= len(assets):
+                # if assets are smaller than addon zip, pad the assets with 0 bits
+                decrypted_addon_zip[i] = 0 ^ addon_zip[i]
+            else:
+                decrypted_addon_zip[i] = assets[i] ^ addon_zip[i]
 
-                # print progress
-                if i % 10000000 == 0:
-                    print_to_textbox(f"{(i / addon_zip_size * 100):.2f}% done", output)
+            # print progress
+            if i % 10000000 == 0:
+                print_to_textbox(f"{(i / addon_zip_size * 100):.2f}% done", output)
 
-            print_to_textbox(f"Addon decrypted! Decryption took {time.time() - start_time:.1f} seconds.", output)
-            decrypt_addon_finish(HLA_root_path)
-        return _decrypt_addon_start
+        print_to_textbox(f"Addon decrypted! Decryption took {time.time() - start_time:.1f} seconds.", output)
+        decrypt_addon_finish()
 
-    def decrypt_addon_finish(HLA_root_path):
-        addon_folder = HLA_root_path + "\game\hlvr_addons"
+    def decrypt_addon_finish():
+        addon_folder = str(HLA_root_path.resolve()) + "\game\hlvr_addons"
         # Save the decrypted addon
         print_to_textbox("Saving addon....", output)
         try:
-            open(addon_zip_path, 'wb').write(decrypted_addon_zip)
+            with open(addon_zip_path, 'wb') as addon_zip_file:
+                addon_zip_file.write(decrypted_addon_zip)
             if not os.path.exists(addon_folder):
                 os.makedirs(addon_folder)
             with zipfile.ZipFile(addon_zip_path, 'r') as zip_ref:
@@ -110,7 +109,7 @@ def decrypt():
         decrypt_button['state'] = tkin.NORMAL
 
     # do the decryption on a different thread from the GUI thread
-    XOR_tread = threading.Thread(target=decrypt_addon_start(str(HLA_root_path.resolve())))
+    XOR_tread = threading.Thread(target=decrypt_addon_start)
     XOR_tread.start()
     decrypt_button['state'] = tkin.DISABLED
 
