@@ -27,10 +27,10 @@ The addon zip is encrypted by doing a bitwise XOR on the zip and a combination o
 - It's also possible that your anti-virus might see the program as a virus. You can add an exception for BS2HLA.exe or if you don't trust it use the instructions below to run the source python script directly.
 
 # Run the python script
-- Have python 3.6 or higher installed.
-- Make sure python is added to the PATH enviroment variable.
-- Download the python script from this page (top right -> green "code" button -> Download zip)
-- Open a command prompt (Ctrl+R -> "cmd" -> Enter)
-- Use the following command: *cd* [path of the folder which contains the .py file]
-- Use the following command: *python bs2hla.py*
-- Follow steps from how to use from step 2 onwards.
+1. Have python 3.6 or higher installed.
+2. Make sure python is added to the PATH enviroment variable.
+3. Download the python script from this page (top right -> green "code" button -> Download zip)
+4. Open a command prompt (Ctrl+R -> "cmd" -> Enter)
+5. Use the following command: *cd* [path of the folder which contains the .py file]
+6. Use the following command: *python bs2hla.py*
+7. Follow steps from how to use from step 2 onwards.
