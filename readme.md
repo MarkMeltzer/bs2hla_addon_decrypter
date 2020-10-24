@@ -1,4 +1,4 @@
-![What an amazing logo, right?](/logo.png)
+![What an amazing logo, right?](/logo.png =150x150)
 
 # Description
 This little program lets you decrypt a Bioshock addon zip using the original Bioshock game files. **Neither this nor the encrypted addon zip contain any of the copyrighted original Bioshock assets**, you will need to provide these yourself by following the steps below. 
