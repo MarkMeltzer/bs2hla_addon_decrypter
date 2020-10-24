@@ -7,7 +7,8 @@ The addon zip is encrypted by doing a bitwise XOR on the zip and a combination o
 
 # Requirements
 - BS2HLA.exe
-- An installation of Bioshock
+- An installation of Bioshock (the original, not the remaster)
+- An installation of Half Life: Alyx
 - The encrypted addon zip
     - You can get this here: 
 
