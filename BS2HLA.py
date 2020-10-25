@@ -1,5 +1,6 @@
 from os import system
 import os
+import zipfile
 import tkinter as tkin
 import tkinter.scrolledtext as st
 from tkinter import font
@@ -29,8 +30,12 @@ def decrypt():
     # Get the Bioshock root path and addon zip path
     Bioshock_root_path = Path(Bioshock_root_path_entry.get().strip())
     addon_zip_path = Path(addon_zip_path_entry.get().strip())
+    HLA_root_path = Path(HLA_root_path_entry.get().strip())
     if not Bioshock_root_path.is_dir():
         print_to_textbox(f"{Bioshock_root_path} cannot be found, try again.",output)
+        return 1
+    if not HLA_root_path.is_dir():
+        print_to_textbox(f"{HLA_root_path} cannot be found, try again.",output)
         return 1
     if not addon_zip_path.is_file():
         print_to_textbox(f"{addon_zip_path} cannot be found or is not a file, try again.",output)
@@ -39,11 +44,10 @@ def decrypt():
     # load the bioshock assets
     print_to_textbox("Loading Bioshock assets...", output)
     try:
-        bulkfile = bytearray(open(Bioshock_root_path / "Content" / "BulkContent" / "1-medicalLevel.blk", 'rb').read())
-        mapfile = bytearray(open(Bioshock_root_path / "Content" / "Maps" / "1-Medical.bsm", 'rb').read())
-        assets = bulkfile + mapfile
-        assets_size = len(assets)
-        print_to_textbox(f"Bioshock assets loaded! Size: {(assets_size / 1000000):.2f}mb", output)
+        with open(Bioshock_root_path / "Content" / "BulkContent" / "1-medicalLevel.blk", 'rb') as bulkfile, open(Bioshock_root_path / "Content" / "Maps" / "1-Medical.bsm", 'rb') as mapfile:
+            assets = bytearray(bulkfile.read()) + bytearray(mapfile.read())
+            assets_size = len(assets)
+            print_to_textbox(f"Bioshock assets loaded! Size: {(assets_size / 1000000):.2f}mb", output)
     except Exception as e:
         print_to_textbox("Could not load Bioshock assets.", output)
         print_to_textbox(str(e), output)
@@ -52,9 +56,10 @@ def decrypt():
     # load the addon zip
     print_to_textbox("Loading addon zip...", output)
     try:
-        addon_zip = bytearray(open(addon_zip_path, 'rb').read())
-        addon_zip_size = len(addon_zip)
-        print_to_textbox(f"Addon zip loaded! Size: {(addon_zip_size / 1000000):.2f}mb", output)
+        with open(addon_zip_path, 'rb') as addon_zip_file:
+            addon_zip = bytearray(addon_zip_file.read())
+            addon_zip_size = len(addon_zip)
+            print_to_textbox(f"Addon zip loaded! Size: {(addon_zip_size / 1000000):.2f}mb", output)
     except Exception as e:
         print_to_textbox("Could not load the addon zip.", output)
         print_to_textbox(str(e), output)
@@ -78,16 +83,23 @@ def decrypt():
                 print_to_textbox(f"{(i / addon_zip_size * 100):.2f}% done", output)
 
         print_to_textbox(f"Addon decrypted! Decryption took {time.time() - start_time:.1f} seconds.", output)
-
         decrypt_addon_finish()
 
     def decrypt_addon_finish():
+        addon_folder = str(HLA_root_path.resolve()) + "\game\hlvr_addons"
         # Save the decrypted addon
         print_to_textbox("Saving addon....", output)
         try:
-            open(addon_zip_path, 'wb').write(decrypted_addon_zip)
+            with open(addon_zip_path, 'wb') as addon_zip_file:
+                addon_zip_file.write(decrypted_addon_zip)
+            if not os.path.exists(addon_folder):
+                os.makedirs(addon_folder)
+            with zipfile.ZipFile(addon_zip_path, 'r') as zip_ref:
+                zip_ref.extractall(addon_folder)
         except Exception as e:
             print_to_textbox("Could not save addon.", output)
+            print_to_textbox(str(addon_zip_path), output)
+            print_to_textbox(str(addon_folder), output)
             print_to_textbox(str(e), output)
             return 1
         print_to_textbox("Decrypted addon saved!", output)
@@ -123,13 +135,18 @@ addon_zip_path_entry_label.grid(row=1, sticky=tkin.W, ipadx=5)
 addon_zip_path_entry = tkin.Entry(window, width=75)
 addon_zip_path_entry.grid(row=1, column=1)
 
+HLA_root_path_entry_label = tkin.Label(window, text='HLA installation root folder: ')
+HLA_root_path_entry_label.grid(row=2, sticky=tkin.W, ipadx=5)
+HLA_root_path_entry = tkin.Entry(window, width=75)
+HLA_root_path_entry.grid(row=2, column=1)
+
 # button
 decrypt_button = tkin.Button(window, text="Decrypt!", command=decrypt, font=font.Font(size=12))
-decrypt_button.grid(row=2, columnspan=2, pady=10)
+decrypt_button.grid(row=3, columnspan=2, pady=10)
 
 # Text output
 output = st.ScrolledText(window, wrap=tkin.WORD, bg="black", fg="#e8e8e8")
-output.grid(row=3, columnspan=2, padx=5)
+output.grid(row=4, columnspan=2, padx=5)
 output.configure(state='disabled')
 
 window.mainloop()
