@@ -44,8 +44,10 @@ def decrypt():
     # load the bioshock assets
     print_to_textbox("Loading Bioshock assets...", output)
     try:
-        with open(Bioshock_root_path / "Content" / "BulkContent" / "1-medicalLevel.blk", 'rb') as bulkfile, open(Bioshock_root_path / "Content" / "Maps" / "1-Medical.bsm", 'rb') as mapfile:
-            assets = bytearray(bulkfile.read()) + bytearray(mapfile.read())
+        with open(Bioshock_root_path / "Content" / "BulkContent" / "1-medicalLevel.blk", 'rb') as bulkfile1, \
+             open(Bioshock_root_path / "Content" / "Maps" / "1-Medical.bsm", 'rb') as mapfile, \
+             open(Bioshock_root_path / "Content" / "BulkContent" / "1-welcomeLevel.blk", 'rb') as bulkfile2:
+            assets = bytearray(bulkfile1.read()) + bytearray(mapfile.read()) + bytearray(bulkfile2.read())
             assets_size = len(assets)
             print_to_textbox(f"Bioshock assets loaded! Size: {(assets_size / 1000000):.2f}mb", output)
     except Exception as e:
