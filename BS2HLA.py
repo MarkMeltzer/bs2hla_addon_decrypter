@@ -86,21 +86,26 @@ def decrypt():
         decrypt_addon_finish()
 
     def decrypt_addon_finish():
-        addon_folder = str(HLA_root_path.resolve()) + "\game\hlvr_addons"
+        addon_folder = str(HLA_root_path.resolve()) + r"\game\hlvr_addons"
         # Save the decrypted addon
         print_to_textbox("Saving addon....", output)
         try:
-            with open(addon_zip_path, 'wb') as addon_zip_file:
-                addon_zip_file.write(decrypted_addon_zip)
+            # save decrypted zip to temporary file
             if not os.path.exists(addon_folder):
                 os.makedirs(addon_folder)
-            with zipfile.ZipFile(addon_zip_path, 'r') as zip_ref:
+            with open(addon_folder + r"\tempfile", 'wb') as temp_file:
+                temp_file.write(decrypted_addon_zip)
+
+            # extract zip content to HLA hlvr_addons folder
+            with zipfile.ZipFile(addon_folder + r"\tempfile", 'r') as zip_ref:
                 zip_ref.extractall(addon_folder)
+
+            # remove temporary file
+            os.remove(addon_folder + r"\tempfile")
         except Exception as e:
             print_to_textbox("Could not save addon.", output)
-            print_to_textbox(str(addon_zip_path), output)
-            print_to_textbox(str(addon_folder), output)
             print_to_textbox(str(e), output)
+            decrypt_button['state'] = tkin.NORMAL
             return 1
         print_to_textbox("Decrypted addon saved!", output)
         print_to_textbox("All done!", output)
@@ -121,7 +126,7 @@ try:
 except:
     # no icon? no big deal
     pass
-window.geometry("670x501")
+window.geometry("670x523")
 window.resizable(0,0)
 
 # Input text fields
