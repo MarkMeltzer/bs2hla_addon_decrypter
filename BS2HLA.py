@@ -27,29 +27,43 @@ def print_to_textbox(s, textbox):
     window.update_idletasks()
 
 def decrypt():
+    # get the addon information
+    try:
+        with open(resource_path("addons_info")) as f:
+            addons_info = {line.split(",")[0].strip() : {"addon_name" : line.split(",")[1].strip(), \
+                        "addon_key_paths" : [path.strip() for path in line.split(",")[2:]]} for line in f \
+                        if len(line.strip())}
+    except Exception as e:
+        print_to_textbox("Could not load addons_info.", output)
+        print_to_textbox(str(e), output)
+        return 1
+
     # Get the Bioshock root path and addon zip path
     Bioshock_root_path = Path(Bioshock_root_path_entry.get().strip())
     addon_zip_path = Path(addon_zip_path_entry.get().strip())
     HLA_root_path = Path(HLA_root_path_entry.get().strip())
     if not Bioshock_root_path.is_dir():
-        print_to_textbox(f"{Bioshock_root_path} cannot be found, try again.",output)
+        print_to_textbox(f"Error when finding Bioshock root directory: {Bioshock_root_path} cannot be found, try again.",output)
         return 1
     if not HLA_root_path.is_dir():
-        print_to_textbox(f"{HLA_root_path} cannot be found, try again.",output)
+        print_to_textbox(f"Error when finding Half-Life Alyx root directory: {HLA_root_path} cannot be found, try again.",output)
         return 1
     if not addon_zip_path.is_file():
-        print_to_textbox(f"{addon_zip_path} cannot be found or is not a file, try again.",output)
+        print_to_textbox(f"Error when finding addon zip file: {addon_zip_path} cannot be found or is not a file, try again.",output)
         return 1
 
     # load the bioshock assets
     print_to_textbox("Loading Bioshock assets...", output)
     try:
-        with open(Bioshock_root_path / "Content" / "BulkContent" / "1-medicalLevel.blk", 'rb') as bulkfile1, \
-             open(Bioshock_root_path / "Content" / "Maps" / "1-Medical.bsm", 'rb') as mapfile, \
-             open(Bioshock_root_path / "Content" / "BulkContent" / "1-welcomeLevel.blk", 'rb') as bulkfile2:
-            assets = bytearray(bulkfile1.read()) + bytearray(mapfile.read()) + bytearray(bulkfile2.read())
-            assets_size = len(assets)
-            print_to_textbox(f"Bioshock assets loaded! Size: {(assets_size / 1000000):.2f}mb", output)
+        key_paths = addons_info[addon_zip_path.name]["addon_key_paths"]
+
+        assets = bytearray()
+        for key_path in key_paths:
+            with open(Bioshock_root_path / key_path, "rb") as f:
+                assets += bytearray(f.read())
+        
+        assets_size = len(assets)
+        print_to_textbox(f"Bioshock assets loaded! Size: {(assets_size / 1000000):.2f}mb", output)
     except Exception as e:
         print_to_textbox("Could not load Bioshock assets.", output)
         print_to_textbox(str(e), output)
@@ -122,7 +136,7 @@ def decrypt():
 
 # Create tkiner window
 window = tkin.Tk()
-window.title("BS2HLA Medical Pavilion addon decrypter")
+window.title("BS2HLA Addon decrypter")
 try:
     window.iconbitmap(resource_path('icon.ico'))
 except:
