@@ -10,7 +10,7 @@ The addon zip is encrypted by doing a bitwise XOR on the zip and a combination o
 - An installation of Bioshock (the original, not the remaster)
 - An installation of Half Life: Alyx
 - The encrypted addon zip
-    - You can get this here: 
+    - You can get this here: https://alyxmods.com/mappage?m=56-Bioshock%20Medical%20Pavilion%20Lobby
 
 # How to use
 1. Run the BS2HLA.exe (problems? See notes below)
